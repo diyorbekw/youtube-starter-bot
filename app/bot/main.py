@@ -6,7 +6,6 @@ from app.bot.router_base import router as base_router
 from app.bot.router_seo import router as seo_router
 from app.bot.router_upload import router as upload_router
 from app.bot.router_statistics import router as statistics_router
-from app.bot.router_analytics import router as analytics_router
 from app.bot.router_logo import router as logo_router
 from app.bot.router_banner import router as banner_router
 from logging import basicConfig, INFO
@@ -21,7 +20,6 @@ async def main():
     dp.include_router(seo_router)
     dp.include_router(upload_router)
     dp.include_router(statistics_router)
-    dp.include_router(analytics_router)
     dp.include_router(logo_router)
     dp.include_router(banner_router)
     await dp.start_polling(bot)

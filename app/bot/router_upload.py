@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from app.bot.states import UploadStates
@@ -12,13 +12,17 @@ import os
 
 router = Router()
 
-@router.message(Command("upload"))
-async def upload_entry(m: Message, state: FSMContext):
+# Video yuklash menyusi
+@router.callback_query(F.data == "menu_upload")
+async def upload_entry(callback: CallbackQuery, state: FSMContext):
     await state.set_state(UploadStates.waiting_topic)
-    await m.answer(
-        "📌 Video mavzusini yuboring (masalan: C++ boshlang’ich dars).",
-        parse_mode=None
+    await callback.message.edit_text(
+        "📌 Video mavzusini yuboring (masalan: C++ boshlang'ich dars).",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Orqaga", callback_data="menu_back")]
+        ])
     )
+    await callback.answer()
 
 @router.message(UploadStates.waiting_topic)
 async def got_topic(m: Message, state: FSMContext):
@@ -27,7 +31,9 @@ async def got_topic(m: Message, state: FSMContext):
     await state.set_state(UploadStates.waiting_video_file)
     await m.answer(
         "🔼 Endi video faylni yuboring (.mp4).",
-        parse_mode=None
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Orqaga", callback_data="menu_back")]
+        ])
     )
 
 @router.message(UploadStates.waiting_video_file, F.video | F.document)
@@ -52,9 +58,6 @@ async def got_video(m: Message, state: FSMContext):
         clean_tags.append(f"#{cleaned}")
     tags = clean_tags
 
-
-
-    
     title = title + " | " + f"{', '.join(tags[:2])}"
     description = description + "\n\n" + f"{', '.join(tags[2:])}"
 
@@ -66,8 +69,11 @@ async def got_video(m: Message, state: FSMContext):
         if not user or not user.google_token_json:
             await state.clear()
             return await m.answer(
-                "❌ Google ulanmagan. Avval /connect ni bosing.",
-                parse_mode=None
+                "❌ Google ulanmagan. Avval Google hisobingizni ulang.",
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="🔗 Google Ulash", callback_data="menu_connect")],
+                    [InlineKeyboardButton(text="🔙 Orqaga", callback_data="menu_back")]
+                ])
             )
 
         job = VideoJob(
@@ -100,5 +106,18 @@ async def got_video(m: Message, state: FSMContext):
         f"🧠 Title: {title}\n"
         f"🏷 Tags: {', '.join(tags)}\n"
         f"{msg}",
-        parse_mode=None
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🏠 Asosiy menyu", callback_data="menu_back")]
+        ])
+    )
+
+# Eski komanda ham qolsin (agar kerak bo'lsa)
+@router.message(Command("upload"))
+async def upload_command(message: Message, state: FSMContext):
+    await state.set_state(UploadStates.waiting_topic)
+    await message.answer(
+        "📌 Video mavzusini yuboring (masalan: C++ boshlang'ich dars).",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Orqaga", callback_data="menu_back")]
+        ])
     )
