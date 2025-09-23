@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-DB_URL = os.getenv("DB_URL", "sqlite:///./local.db")
+DB_URL = os.getenv("DB_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 KIE_API_KEY = os.getenv("KIE_API_KEY")
 
