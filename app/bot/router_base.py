@@ -44,10 +44,6 @@ def create_main_menu_keyboard():
             InlineKeyboardButton(text="📊 Statistika", callback_data="menu_statistics")
         ],
         [
-            InlineKeyboardButton(text="🖼️ Banner Yaratish", callback_data="menu_banner"),
-            InlineKeyboardButton(text="📸 Logo Yaratish", callback_data="menu_logo")
-        ],
-        [
             InlineKeyboardButton(text="🔍 SEO Tavsiyalari", callback_data="menu_seo"),
             InlineKeyboardButton(text="ℹ️ Yordam", callback_data="menu_help")
         ],
